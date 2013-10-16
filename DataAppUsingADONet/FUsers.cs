@@ -15,28 +15,20 @@ namespace DataAppUsingADONet
     {
         string connString = DataAppUsingADONet.Utilities.GetConnString();
         DataTable usersTempTable = new DataTable();
+        int userIdToUpdate = -1;
 
         public FUsers()
         {
             InitializeComponent();
         }
 
+        //--------------------------------------
+        // Part of code relative to the dragging
+        //--------------------------------------
+
         private void usersDataGridView_Click(object sender, EventArgs e)
         {
             txtPos.Text = usersDataGridView.CurrentRow.Index.ToString();
-        }
-
-        private void FUsers_Load(object sender, EventArgs e)
-        {
-            // TODO: This line of code loads data into the 'trainITDataSet.Users' table. You can move, or remove it, as needed.
-            this.usersTableAdapter.Fill(this.trainITDataSet.Users);
-
-            txtPos.Text = usersDataGridView.CurrentRow.Index.ToString();
-             
-            //Manual way
-            LoadData(this.dgvUsers);
-
-            setModeNormalForDragging();
         }
 
         private void usersBindingNavigatorSaveItem_Click(object sender, EventArgs e)
@@ -45,96 +37,73 @@ namespace DataAppUsingADONet
 
         }
 
-        private void btnFind_Click(object sender, EventArgs e)
-        {
-            if (txtFirstName.Text == "")
-            {
-                LoadData(dgvUsers);
-
-                this.usersTableAdapter.Fill(this.trainITDataSet.Users);
-            }
-            else
-            {
-                LoadData(dgvUsers, txtFirstName.Text);
-
-                this.usersTableAdapter.FillBy (this.trainITDataSet.Users,txtFirstName.Text);
-            }
-        }
-
-        private DataTable LoadData(DataGridView dgv)
-        {//Load data into data grid view: dgvUsers
-
-            DataTable aDataTable = new DataTable(); 
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                string query = "select UserID, UserFirstName, UserSecondName, UserBdate, UserName, UserMail from Users";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    try
-                    {
-                        conn.Open();
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        aDataTable.Load(reader);
-                        dgv.DataSource = aDataTable;
-                        reader.Close();
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show("A problem with the User SQL Connection occurs");
-                        throw;
-                    }
-                }
-            }
-            return aDataTable;
-        }
-
-        private void LoadData(DataGridView dgv, string aValue)
-        {//Load data into data grid view: dgvUsers
-                       
-            using (SqlConnection conn = new SqlConnection(connString))
-            {                
-                string query = "select UserID, UserFirstName, UserSecondName, UserBdate, UserName, UserMail from Users where UserFirstName = @userFirstName";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.Add(new SqlParameter("@userFirstName",SqlDbType.VarChar));
-                    cmd.Parameters["@userFirstName"].Value = aValue;
-
-
-                    try
-                    {
-                        conn.Open();
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        DataTable dataTable = new DataTable();
-                        dataTable.Load(reader);
-                        dgv.DataSource = dataTable;
-                        reader.Close();
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show("A problem with the User SQL Connection occurs");
-                        throw;
-                    }
-                }
-            }
-        }
-
-        private void tsBtnShowConnectionString_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(connString, "Actual Connection String");
-        }
-
-        private void tsBtnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void bindingNavigatorSaveItem_Click(object sender, EventArgs e)
-        {          
+        {//Save changes into data source.        
             this.Validate();
             this.usersBindingSource.EndEdit();
             this.tableAdapterManager.UpdateAll(this.trainITDataSet);
 
             setModeNormalForDragging();
+        }
+
+        public void setModeNormalForDragging()
+        {
+            tsBtnReloadGrids.Enabled = true;
+            btnFind.Enabled = true;
+            btnLoginCheck.Enabled = true;
+
+            bnBtnFirst.Enabled = true;
+            bnBtnPrevious.Enabled = true;
+
+            bnPosition.ReadOnly = false;
+
+            bnBtnNext.Enabled = true;
+            bnBtnLast.Enabled = true;
+
+            bnBtnNew.Enabled = true;
+            bnBtEdit.Enabled = true;
+            bnBtDelete.Enabled = true;
+            bnBtSave.Enabled = false;
+            bnBtCancel.Enabled = false;
+
+            userFirstNameTextBox.ReadOnly = true;
+            userSecondNameTextBox.ReadOnly = true;
+            userBDateDateTimePicker.Enabled = false;
+            userNameTextBox.ReadOnly = true;
+            userMailTextBox.ReadOnly = true;
+
+            usersDataGridView.Enabled = true;
+            dgvUsers.Enabled = true;
+        }
+
+        public void setModeNewForDragging()
+        {
+            tsBtnReloadGrids.Enabled = false;
+            btnFind.Enabled = false;
+            btnLoginCheck.Enabled = false;
+
+            bnBtnFirst.Enabled = false;
+            bnBtnPrevious.Enabled = false;
+
+            bnPosition.ReadOnly = true;
+
+            bnBtnNext.Enabled = false;
+            bnBtnLast.Enabled = false;
+
+            bnBtnNew.Enabled = false;
+            bnBtEdit.Enabled = false;
+            bnBtDelete.Enabled = false;
+            bnBtSave.Enabled = true;
+            bnBtCancel.Enabled = true;
+
+            userFirstNameTextBox.ReadOnly = false;
+            userSecondNameTextBox.ReadOnly = false;
+            userBDateDateTimePicker.Enabled = true;
+            userNameTextBox.ReadOnly = false;
+            userMailTextBox.ReadOnly = false;
+
+            usersDataGridView.Enabled = false;
+            dgvUsers.Enabled = false;
         }
 
         private void bnBtnNew_Click(object sender, EventArgs e)
@@ -164,55 +133,110 @@ namespace DataAppUsingADONet
             setModeNewForDragging();
         }
 
-        private void btnLoginCheck_Click(object sender, EventArgs e)
-        {
-            int resultado = -1;
-            if (txtUserLoginCheck.Text == "")
-            {
-                MessageBox.Show("Falta el usuario");
-            }
-            else
-            {
-                //Comprobamos el login.
-                using (SqlConnection conn = new SqlConnection(connString))
-                {
-                    string passLeida = txtPassLoginCheck.Text;
-                    string query = String.Format(@"select UserName from Users where UserName=@userLeido and PWdCompare('{0}',UserPass)=1",passLeida);
-                    using (SqlCommand cmd = new SqlCommand(query,conn))
-                    {
-                        cmd.Parameters.Add(new SqlParameter("@userLeido", SqlDbType.VarChar));
-                        cmd.Parameters["@userLeido"].Value = txtUserLoginCheck.Text;
+        //-------------------------------------
+        // Part of code relative to the ADO.net
+        //-------------------------------------
 
+        private DataTable LoadData(DataGridView dgv)
+        {//Load data into data grid view: dgvUsers
+
+            DataTable aDataTable = new DataTable();
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                string query = "select UserID, UserFirstName, UserSecondName, UserBdate, UserName, UserMail from Users";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    try
+                    {
                         conn.Open();
                         SqlDataReader reader = cmd.ExecuteReader();
-                        
-                        while (reader.Read())
-                        {
-                            resultado = 50;
-                        }
+                        aDataTable.Load(reader);
+                        dgv.DataSource = aDataTable;
                         reader.Close();
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("A problem with the User SQL Connection occurs");
+                        throw;
                     }
                 }
             }
-            if (resultado > 0)
+            return aDataTable;
+        }
+
+        private void LoadData(DataGridView dgv, string aFirstName)
+        {//Load data into data grid view: dgvUsers given a FirstName
+
+            using (SqlConnection conn = new SqlConnection(connString))
             {
-                MessageBox.Show("Acceso Permitido.");
-            }
-            else
-            {
-                MessageBox.Show("Acceso Denegado");
+                string query = "select UserID, UserFirstName, UserSecondName, UserBdate, UserName, UserMail from Users where UserFirstName = @userFirstName";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@userFirstName", SqlDbType.VarChar));
+                    cmd.Parameters["@userFirstName"].Value = aFirstName;
+
+
+                    try
+                    {
+                        conn.Open();
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        DataTable dataTable = new DataTable();
+                        dataTable.Load(reader);
+                        dgv.DataSource = dataTable;
+                        reader.Close();
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("A problem with the User SQL Connection occurs");
+                        throw;
+                    }
+                }
             }
         }
 
         private void tsBtnNew_Click(object sender, EventArgs e)
         {
-            txtUserID.Text = "";
-            txtUserFirstName.Text = "";
-            txtUserSecondName.Text = "";
-            dtpUserBDate.Value = DateTime.Now;
-            txtUserName.Text = "";
-            txtUserPass.Text = "";
-            txtUserMail.Text = "";
+            cleardataForADo();
+            setModeNewForADO();
+            userIdToUpdate = -1;
+        }
+
+        private void tsBtnEdit_Click(object sender, EventArgs e)
+        {
+            userIdToUpdate = Convert.ToInt32(txtUserID.Text);
+            setModeNewForADO();
+            txtUserPass.ReadOnly = true;
+        }
+
+        private void tsBtnCancel_Click(object sender, EventArgs e)
+        {
+            setModeNormalForADO();
+            cleardataForADo();
+            userIdToUpdate = -1;
+        }
+
+        private void tsBtnDelete_Click(object sender, EventArgs e)
+        { //Save the row in table with the same UserName
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                int userToDelete = Convert.ToInt32(txtUserID.Text);
+                string query = @"delete from Users where UserID=@userID";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@userID", SqlDbType.Int));
+                    cmd.Parameters["@userID"].Value = userToDelete;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    //Update data in both data grids
+                    usersTempTable = LoadData(dgvUsers);
+                    this.usersTableAdapter.Fill(this.trainITDataSet.Users);
+                }
+            }
+            setModeNormalForADO();
+            userIdToUpdate = -1;
         }
 
         private void tsBtnSave_Click(object sender, EventArgs e)
@@ -221,12 +245,28 @@ namespace DataAppUsingADONet
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string pass = txtUserPass.Text;
-                string query = String.Format(@"insert into Users(UserFirstName, UserSecondName, UserBdate, UserName, UserPass, UserMail)
-                                               values(@userFirstName,@userSecondName,@userBDate,@userName,PwdEncrypt('{0}'),@userMail)",
-                                               pass);
+                string query = null;
+                if (userIdToUpdate == -1)
+                {//Inserting new row.
+                    query = String.Format(@"INSERT INTO Users(UserFirstName, UserSecondName, UserBdate, UserName, UserPass, UserMail)
+                                            VALUES(@userFirstName,@userSecondName,@userBDate,@userName,PwdEncrypt('{0}'),@userMail)",pass);
+                }
+                else
+                {//Updating an edited row.
+                    query = @"UPDATE Users SET UserFirstName=@userFirstName, UserSecondName=@userSecondName, 
+                              UserBdate=@userBDate, UserName=@userName , UserMail=@userMail
+                               WHERE UserID=@userID";                                                                                          
+                }
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+
+                    if (userIdToUpdate != -1)
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@userID", SqlDbType.Int));
+                        cmd.Parameters["@userID"].Value = userIdToUpdate;
+                    }
+
                     cmd.Parameters.Add(new SqlParameter("@userFirstName", SqlDbType.VarChar));
                     cmd.Parameters["@userFirstName"].Value = txtUserFirstName.Text;
 
@@ -250,6 +290,8 @@ namespace DataAppUsingADONet
                     this.usersTableAdapter.Fill(this.trainITDataSet.Users);
                 }
             }
+            setModeNormalForADO();
+            userIdToUpdate = -1;
         }
 
         private void tsBtnReloadGrids_Click(object sender, EventArgs e)
@@ -336,66 +378,163 @@ namespace DataAppUsingADONet
             dgvUsers.CurrentCell = dgvUsers[0, dgvUsers.RowCount-1];
         }
 
-        private void tsBtnDelete_Click(object sender, EventArgs e)
+        public void setModeNormalForADO()
         {
+            tsBtnFirst.Enabled = true;
+            tsBtnPrevious.Enabled = true;
+            tsBtnNext.Enabled = true;
+            tsBtnLast.Enabled = true;
 
-        }
+            tsBtnNew.Enabled = true;
+            tsBtnEdit.Enabled = true;
+            tsBtnDelete.Enabled = true;
+            tsBtnSave.Enabled = false;
+            tsBtnCancel.Enabled = false;
 
-        public void setModeNormalForDragging()
-        {
-            tsBtnReloadGrids.Enabled = true;
             btnFind.Enabled = true;
             btnLoginCheck.Enabled = true;
+            tsBtnReloadGrids.Enabled = true;
 
-            bnBtnFirst.Enabled = true;
-            bnBtnPrevious.Enabled = true;
+            txtUserFirstName.ReadOnly = true;
+            txtUserSecondName.ReadOnly = true;
+            dtpUserBDate.Enabled = false;
+            txtUserName.ReadOnly = true;
+            txtUserMail.ReadOnly = true;
+            txtUserPass.ReadOnly = true;
 
-            bnPosition.ReadOnly = false;
+            dgvUsers.Enabled = true;
 
-            bnBtnNext.Enabled = true;
-            bnBtnLast.Enabled = true;
-
-            bnBtnNew.Enabled = true;
-            bnBtEdit.Enabled = true;
-            bnBtDelete.Enabled = true;
-            bnBtSave.Enabled = false;                                                          
-            bnBtCancel.Enabled = false;
-
-            userFirstNameTextBox.ReadOnly = true;
-            userSecondNameTextBox.ReadOnly = true;
-            userBDateDateTimePicker.Enabled = false;
-            userNameTextBox.ReadOnly = true;
-            userMailTextBox.ReadOnly = true;
+            usersDataGridView.Enabled = true;
+            dgvUsers.Enabled = true;
         }
 
-        public void setModeNewForDragging()
+        public void setModeNewForADO()
         {
-            tsBtnReloadGrids.Enabled = false;
+            tsBtnFirst.Enabled = false;
+            tsBtnPrevious.Enabled = false;
+            tsBtnNext.Enabled = false;
+            tsBtnLast.Enabled = false;
+
+            tsBtnNew.Enabled = false;
+            tsBtnEdit.Enabled = false;
+            tsBtnDelete.Enabled = false;
+            tsBtnSave.Enabled = true;
+            tsBtnCancel.Enabled = true;
+
             btnFind.Enabled = false;
             btnLoginCheck.Enabled = false;
+            tsBtnReloadGrids.Enabled = false;
 
-            bnBtnFirst.Enabled = false;
-            bnBtnPrevious.Enabled = false;
+            txtUserFirstName.ReadOnly = false;
+            txtUserSecondName.ReadOnly = false;
+            dtpUserBDate.Enabled = true;
+            txtUserName.ReadOnly = false;
+            txtUserMail.ReadOnly = false;
+            txtUserPass.ReadOnly = false;
 
-            bnPosition.ReadOnly = true;
+            dgvUsers.Enabled = true;
+            dgvUsers.Enabled = false;
 
-            bnBtnNext.Enabled = false;
-            bnBtnLast.Enabled = false;
-
-            bnBtnNew.Enabled = false;
-            bnBtEdit.Enabled = false;
-            bnBtDelete.Enabled = false;
-            bnBtSave.Enabled = true;
-            bnBtCancel.Enabled = true;
-
-            userFirstNameTextBox.ReadOnly = false;
-            userSecondNameTextBox.ReadOnly = false;
-            userBDateDateTimePicker.Enabled = true;
-            userNameTextBox.ReadOnly = false;
-            userMailTextBox.ReadOnly = false;
+            usersDataGridView.Enabled = false;
+            dgvUsers.Enabled = false;
         }
 
+        public void cleardataForADo()
+        {
+            txtUserID.Text = "";
+            txtUserFirstName.Text = "";
+            txtUserSecondName.Text = "";
+            dtpUserBDate.Value = DateTime.Now;
+            txtUserName.Text = "";
+            txtUserPass.Text = "";
+            txtUserMail.Text = "";
+        }
 
+        //----------------------------------------------------
+        // Part of code common to both methods: Dragging & ADO
+        //----------------------------------------------------
+        private void FUsers_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'trainITDataSet.Users' table. You can move, or remove it, as needed.
+            this.usersTableAdapter.Fill(this.trainITDataSet.Users);
 
+            txtPos.Text = usersDataGridView.CurrentRow.Index.ToString();
+
+            //ADO.Net 
+            LoadData(this.dgvUsers);
+
+            setModeNormalForDragging();
+            setModeNormalForADO();
+        }
+
+        private void btnFind_Click(object sender, EventArgs e)
+        {//Finf all user with the same Firstname
+            if (txtFirstName.Text == "")
+            {
+                LoadData(dgvUsers);
+
+                this.usersTableAdapter.Fill(this.trainITDataSet.Users);
+            }
+            else
+            {
+                LoadData(dgvUsers, txtFirstName.Text);
+
+                this.usersTableAdapter.FillBy(this.trainITDataSet.Users, txtFirstName.Text);
+            }
+        }
+
+        //----------------------------------------------------
+        // Others
+        //----------------------------------------------------
+
+        private void btnLoginCheck_Click(object sender, EventArgs e)
+        {
+            int resultado = -1;
+            if (txtUserLoginCheck.Text == "")
+            {
+                MessageBox.Show("Falta el usuario");
+            }
+            else
+            {
+                //Comprobamos el login.
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    string passLeida = txtPassLoginCheck.Text;
+                    string query = String.Format(@"select UserName from Users where UserName=@userLeido and PWdCompare('{0}',UserPass)=1", passLeida);
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@userLeido", SqlDbType.VarChar));
+                        cmd.Parameters["@userLeido"].Value = txtUserLoginCheck.Text;
+
+                        conn.Open();
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            resultado = 50;
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+            if (resultado > 0)
+            {
+                MessageBox.Show("Acceso Permitido.");
+            }
+            else
+            {
+                MessageBox.Show("Acceso Denegado");
+            }
+        }
+
+        private void tsBtnShowConnectionString_Click(object sender, EventArgs e)
+        {//Shows the connection String taking it from the Configuration file.
+            MessageBox.Show(connString, "Actual Connection String");
+        }
+
+        private void tsBtnClose_Click(object sender, EventArgs e)
+        {//Close application
+            this.Close();
+        }
     }
 }

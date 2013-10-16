@@ -108,9 +108,9 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsBtnNew = new System.Windows.Forms.ToolStripButton();
             this.tsBtnEdit = new System.Windows.Forms.ToolStripButton();
-            this.tsBtnCancel = new System.Windows.Forms.ToolStripButton();
-            this.tsBtnSave = new System.Windows.Forms.ToolStripButton();
             this.tsBtnDelete = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnSave = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnCancel = new System.Windows.Forms.ToolStripButton();
             this.usersTableAdapter = new DataAppUsingADONet.TrainITDataSetTableAdapters.UsersTableAdapter();
             this.tableAdapterManager = new DataAppUsingADONet.TrainITDataSetTableAdapters.TableAdapterManager();
             this.label12 = new System.Windows.Forms.Label();
@@ -352,6 +352,7 @@
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6});
             this.usersDataGridView.DataSource = this.usersBindingSource;
+            this.usersDataGridView.Enabled = false;
             this.usersDataGridView.Location = new System.Drawing.Point(12, 53);
             this.usersDataGridView.Name = "usersDataGridView";
             this.usersDataGridView.ReadOnly = true;
@@ -862,15 +863,17 @@
             this.tsBtnEdit.Name = "tsBtnEdit";
             this.tsBtnEdit.Size = new System.Drawing.Size(23, 22);
             this.tsBtnEdit.Text = "Editar";
+            this.tsBtnEdit.Click += new System.EventHandler(this.tsBtnEdit_Click);
             // 
-            // tsBtnCancel
+            // tsBtnDelete
             // 
-            this.tsBtnCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsBtnCancel.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnCancel.Image")));
-            this.tsBtnCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsBtnCancel.Name = "tsBtnCancel";
-            this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
-            this.tsBtnCancel.Text = "Cancelar edición";
+            this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsBtnDelete.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnDelete.Image")));
+            this.tsBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnDelete.Name = "tsBtnDelete";
+            this.tsBtnDelete.Size = new System.Drawing.Size(23, 22);
+            this.tsBtnDelete.Text = "Borrar";
+            this.tsBtnDelete.Click += new System.EventHandler(this.tsBtnDelete_Click);
             // 
             // tsBtnSave
             // 
@@ -882,15 +885,15 @@
             this.tsBtnSave.Text = "Grabar";
             this.tsBtnSave.Click += new System.EventHandler(this.tsBtnSave_Click);
             // 
-            // tsBtnDelete
+            // tsBtnCancel
             // 
-            this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsBtnDelete.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnDelete.Image")));
-            this.tsBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsBtnDelete.Name = "tsBtnDelete";
-            this.tsBtnDelete.Size = new System.Drawing.Size(23, 22);
-            this.tsBtnDelete.Text = "Borrar";
-            this.tsBtnDelete.Click += new System.EventHandler(this.tsBtnDelete_Click);
+            this.tsBtnCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsBtnCancel.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnCancel.Image")));
+            this.tsBtnCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnCancel.Name = "tsBtnCancel";
+            this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
+            this.tsBtnCancel.Text = "Cancelar edición";
+            this.tsBtnCancel.Click += new System.EventHandler(this.tsBtnCancel_Click);
             // 
             // usersTableAdapter
             // 
@@ -932,6 +935,7 @@
             // 
             this.txtPos.Location = new System.Drawing.Point(384, 28);
             this.txtPos.Name = "txtPos";
+            this.txtPos.ReadOnly = true;
             this.txtPos.Size = new System.Drawing.Size(49, 20);
             this.txtPos.TabIndex = 42;
             // 
