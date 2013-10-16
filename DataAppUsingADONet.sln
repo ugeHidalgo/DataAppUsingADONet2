@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAppUsingADONet", "DataAppUsingADONet\DataAppUsingADONet.csproj", "{45E8564A-F4C5-4B8A-901D-C50B9CF95E55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45E8564A-F4C5-4B8A-901D-C50B9CF95E55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45E8564A-F4C5-4B8A-901D-C50B9CF95E55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45E8564A-F4C5-4B8A-901D-C50B9CF95E55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45E8564A-F4C5-4B8A-901D-C50B9CF95E55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
