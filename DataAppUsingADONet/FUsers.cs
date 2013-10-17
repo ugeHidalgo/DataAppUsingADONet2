@@ -356,6 +356,7 @@ namespace DataAppUsingADONet
             {
                 dgvUsers.CurrentCell = dgvUsers[0, dgvUsers.CurrentRow.Index - 1];
                 dgvUsers_Click(sender, e);
+                txtPos.Text = dgvUsers.CurrentRow.Index.ToString();
             }
         }
 
@@ -365,17 +366,20 @@ namespace DataAppUsingADONet
             {
                 dgvUsers.CurrentCell = dgvUsers[0, dgvUsers.CurrentRow.Index + 1];
                 dgvUsers_Click(sender, e);
+                txtPos.Text = dgvUsers.CurrentRow.Index.ToString();
             }
         }
 
         private void tsBtnFirst_Click(object sender, EventArgs e)
         {
             dgvUsers.CurrentCell = dgvUsers[0, 0];
+            txtPos.Text = dgvUsers.CurrentRow.Index.ToString();
         }
 
         private void tsBtnLast_Click(object sender, EventArgs e)
         {
             dgvUsers.CurrentCell = dgvUsers[0, dgvUsers.RowCount-1];
+            txtPos.Text = dgvUsers.CurrentRow.Index.ToString();
         }
 
         public void setModeNormalForADO()
@@ -431,9 +435,6 @@ namespace DataAppUsingADONet
             txtUserName.ReadOnly = false;
             txtUserMail.ReadOnly = false;
             txtUserPass.ReadOnly = false;
-
-            dgvUsers.Enabled = true;
-            dgvUsers.Enabled = false;
 
             usersDataGridView.Enabled = false;
             dgvUsers.Enabled = false;
